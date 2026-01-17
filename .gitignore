@@ -1,0 +1,6 @@
+uploads/
+static/plots/
+__pycache__/
+*.pkl
+venv/
+.ipynb_checkpoints/

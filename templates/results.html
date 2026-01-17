@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Results</title>
+</head>
+<body>
+
+<h2>User Threshold: {{ threshold }}</h2>
+<h3>Best Threshold (Cost Optimized): {{ best_threshold }}</h3>
+
+<hr>
+
+<h2>EDA Plots</h2>
+
+<div style="display: flex; flex-wrap: wrap;">
+    {% for file in plot_files %}
+        <div style="margin: 10px;">
+            <img src="{{ url_for('static', filename=file) }}"
+                 width="400"
+                 alt="EDA Plot">
+        </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>
