@@ -7,6 +7,8 @@ from ml.cost_analysis import threshold_cost_curve
 from ml.preprocessing import preprocess_user_data
 from ml.eda import generate_eda
 from ml.feature_importance import get_feature_importance
+from ml.retention import get_retention_actions
+
 
 feature_names = joblib.load("ml/feature_columns.pkl")
 
@@ -27,11 +29,24 @@ rf_model = joblib.load("ml/rf_model.pkl")
 def home():
     return render_template("index.html")
 
+
+    
 @app.route("/risk")
 def risk():
     df = pd.read_csv("static/results.csv")
+    
+
+
+    # Apply retention logic per customer
+    df["Retention_Actions"] = df.apply(
+        lambda row: get_retention_actions(row),
+        axis=1
+        
+    )
+
     table_data = df.to_dict(orient="records")
     return render_template("risk.html", table_data=table_data)
+
  
 @app.route("/upload", methods=["POST"])
 def upload():
@@ -102,6 +117,8 @@ def upload():
     labels=["Low", "Medium", "High"]
     )
     table_data = df.to_dict(orient="records")
+
+    
 
     # -----------------------------
     # 5️⃣ COST-OPTIMAL THRESHOLD

@@ -12,6 +12,7 @@
   </select>
 </div>
 
+<!-- ================= RISK TABLE ================= -->
 <table id="riskTable" border="1">
   <thead>
     <tr>
@@ -19,26 +20,42 @@
       <th>Churn Probability</th>
       <th>Prediction</th>
       <th>Risk Level</th>
+      <th>Retention Actions</th>
     </tr>
   </thead>
+
   <tbody>
     {% for row in table_data %}
     <tr data-pred="{{ row['RF_Pred'] }}" data-prob="{{ row['RF_Prob'] }}">
-      <td>{{ loop.index }}</td>
+      <td>{{ row["customerID"] if "customerID" in row else loop.index }}</td>
       <td>{{ "%.2f"|format(row["RF_Prob"]) }}</td>
       <td>{{ "Churn" if row["RF_Pred"] == 1 else "No Churn" }}</td>
       <td>{{ row["Risk_Level"] }}</td>
+
+      <!-- RETENTION ACTIONS -->
+      <td>
+        {% if row["Retention_Actions"] %}
+          <ul>
+            {% for action in row["Retention_Actions"] %}
+              <li>{{ action }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          —
+        {% endif %}
+      </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+
+<!-- ================= JS ONLY ================= -->
 <script>
 function filterRows(type) {
   let rows = document.querySelectorAll("#riskTable tbody tr");
 
   rows.forEach(row => {
     let pred = row.dataset.pred;
-
     if (type === "all") row.style.display = "";
     else if (type === "churn" && pred === "1") row.style.display = "";
     else if (type === "non-churn" && pred === "0") row.style.display = "";
