@@ -1,0 +1,61 @@
+<h2>Customer Churn Risk Segmentation</h2>
+
+<div>
+  <button onclick="filterRows('all')">All</button>
+  <button onclick="filterRows('churn')">Churn</button>
+  <button onclick="filterRows('non-churn')">Non Churn</button>
+
+  <select onchange="sortTable(this.value)">
+    <option value="">Sort Probability</option>
+    <option value="asc">Ascending</option>
+    <option value="desc">Descending</option>
+  </select>
+</div>
+
+<table id="riskTable" border="1">
+  <thead>
+    <tr>
+      <th>Customer</th>
+      <th>Churn Probability</th>
+      <th>Prediction</th>
+      <th>Risk Level</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in table_data %}
+    <tr data-pred="{{ row['RF_Pred'] }}" data-prob="{{ row['RF_Prob'] }}">
+      <td>{{ loop.index }}</td>
+      <td>{{ "%.2f"|format(row["RF_Prob"]) }}</td>
+      <td>{{ "Churn" if row["RF_Pred"] == 1 else "No Churn" }}</td>
+      <td>{{ row["Risk_Level"] }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<script>
+function filterRows(type) {
+  let rows = document.querySelectorAll("#riskTable tbody tr");
+
+  rows.forEach(row => {
+    let pred = row.dataset.pred;
+
+    if (type === "all") row.style.display = "";
+    else if (type === "churn" && pred === "1") row.style.display = "";
+    else if (type === "non-churn" && pred === "0") row.style.display = "";
+    else row.style.display = "none";
+  });
+}
+
+function sortTable(order) {
+  let tbody = document.querySelector("#riskTable tbody");
+  let rows = Array.from(tbody.querySelectorAll("tr"));
+
+  rows.sort((a, b) => {
+    let p1 = parseFloat(a.dataset.prob);
+    let p2 = parseFloat(b.dataset.prob);
+    return order === "asc" ? p1 - p2 : p2 - p1;
+  });
+
+  rows.forEach(row => tbody.appendChild(row));
+}
+</script>

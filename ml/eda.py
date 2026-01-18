@@ -8,16 +8,25 @@ import os
 import pandas as pd
 import os
 
-def generate_eda(df, out_dir="static/plots"):
+def generate_eda(df, important_features, out_dir="static/plots"):
+
     
     os.makedirs(out_dir, exist_ok=True)
+    # Clear old plots
+    for file in os.listdir(out_dir):
+     if file.endswith(".png"):
+        os.remove(os.path.join(out_dir, file))
 
     # ---------------------------
     # 1️⃣ BASIC DISTRIBUTIONS
     # ---------------------------
     
     
-    numeric_cols = ["tenure", "MonthlyCharges", "TotalCharges"]
+    numeric_cols = [
+    f for f in important_features
+    if f in df.columns and pd.api.types.is_numeric_dtype(df[f])
+    ]
+    print(numeric_cols)
 
     for col in numeric_cols:
       if col in df.columns:
@@ -73,7 +82,11 @@ def generate_eda(df, out_dir="static/plots"):
     # 4️⃣ CATEGORICAL vs CHURN
     # ---------------------------
     if "Churn" in df.columns:
-        cat_cols = df.select_dtypes(include="object").columns
+        cat_cols = [
+            f for f in important_features
+            if f in df.columns and df[f].dtype == "object"
+        ]
+
 
         for col in cat_cols:
             plt.figure()

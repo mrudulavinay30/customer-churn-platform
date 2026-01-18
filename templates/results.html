@@ -7,6 +7,20 @@
 
 <h2>User Threshold: {{ threshold }}</h2>
 <h3>Best Threshold (Cost Optimized): {{ best_threshold }}</h3>
+<h2>Top Factors Influencing Churn</h2>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Feature</th>
+        <th>Impact</th>
+    </tr>
+    {% for row in importance_data %}
+    <tr>
+        <td>{{ row.feature }}</td>
+        <td>{{ "%.2f"|format(row.importance) }}</td>
+    </tr>
+    {% endfor %}
+</table>
 
 <hr>
 
